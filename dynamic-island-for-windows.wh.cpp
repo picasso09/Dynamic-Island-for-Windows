@@ -9597,6 +9597,35 @@ class Renderer {
 
             D2D1_RECT_F waveRect = D2D1::RectF(rect.right - 42.0f - shiftX, cy - 10.0f,
                                                rect.right - 14.0f - shiftX, cy + 10.0f);
+            // Song title in collapsed media pill
+            if (!state.media.title.empty()) {
+                D2D1_RECT_F titleRect = D2D1::RectF(
+                    artRect.right + 8.0f,
+                    rect.top,
+                    waveRect.left - 8.0f,
+                    rect.bottom
+                );
+
+                textBrush_->SetOpacity(0.92f);
+
+                if (textFormat_) {
+                    textFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+                    textFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
+
+                    DrawMarqueeText(
+                        state.media.title,
+                        titleRect,
+                        textFormat_.Get(),
+                        textBrush_.Get(),
+                        now,
+                        42.0f,
+                        marqueeTitleCache_
+                    );
+
+                    textFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
+                    textFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
+                }
+            }
             if (state.media.playing) {
                 DrawWaveform(state, waveRect);
             } else {
@@ -10840,7 +10869,7 @@ Activity ActivityForKind(IslandKind kind, const Settings& settings, const Shared
 
     switch (kind) {
         case IslandKind::Media:
-            activity.width = 150.0f;
+            activity.width = 200.0f;
             activity.height = 44.0f;
             break;
         case IslandKind::Progress:
